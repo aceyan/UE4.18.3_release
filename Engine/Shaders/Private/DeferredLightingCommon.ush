@@ -538,11 +538,17 @@ float4 GetDynamicLighting(float3 WorldPosition, float3 CameraVector, FGBufferDat
 			#else
 				float3 LobeEnergy = AreaLightSpecular(LightData, LobeRoughness, ToLight, L, V, N);
 
+			BRANCH
+			if (ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
+			{
+				//float3 LightColor = LightData.LightColorAndFalloffExponent.rgb;
+				LightAccumulator.TotalLight = float3(1.0f, 1.0f, 1.0f) * LightColor;
+			}
 				// accumulate surface
 				{
 					float3 SurfaceLighting = SurfaceShading(GBuffer, LobeRoughness, LobeEnergy, L, V, N, Random);
-					LightAccumulator_Add(LightAccumulator, SurfaceLighting, (1.0/PI), LightColor * (NoL * SurfaceAttenuation), bNeedsSeparateSubsurfaceLightAccumulation);
-				}
+				LightAccumulator_Add(LightAccumulator, SurfaceLighting, (1.0 / PI), LightColor * (NoL * SurfaceAttenuation), bNeedsSeparateSubsurfaceLightAccumulation);
+			}
 
 				// accumulate subsurface
 				{

@@ -266,7 +266,8 @@ float Decode71(float Scalar, out uint Mask)
 #define SHADINGMODELID_HAIR					7
 #define SHADINGMODELID_CLOTH				8
 #define SHADINGMODELID_EYE					9
-#define SHADINGMODELID_NUM					10
+#define SHADINGMODELID_MYSHADINGMODEL		10
+#define SHADINGMODELID_NUM					11
 #define SHADINGMODELID_MASK					0xF					
 
 // The flags are defined so that 0 value has no effect!
@@ -897,7 +898,8 @@ float3 GetShadingModelColor(uint ShadingModelID)
 	else if (ShadingModelID == SHADINGMODELID_TWOSIDED_FOLIAGE) return float3(0.2f, 0.2f, 0.8f); // Blue
 	else if (ShadingModelID == SHADINGMODELID_HAIR) return float3(0.6f, 0.1f, 0.5f);
 	else if (ShadingModelID == SHADINGMODELID_CLOTH) return float3(0.7f, 1.0f, 1.0f); 
-	else if (ShadingModelID == SHADINGMODELID_EYE) return float3(0.3f, 1.0f, 1.0f); 
+	else if (ShadingModelID == SHADINGMODELID_EYE) return float3(0.3f, 1.0f, 1.0f);
+	else if (ShadingModelID == SHADINGMODELID_MYSHADINGMODEL) return float3(1.0f, 0.1f, 0.1f);
 	else return float3(1.0f, 1.0f, 1.0f); // White
 #else
 	switch(ShadingModelID)
@@ -912,6 +914,7 @@ float3 GetShadingModelColor(uint ShadingModelID)
 		case SHADINGMODELID_HAIR: return float3(0.6f, 0.1f, 0.5f);
 		case SHADINGMODELID_CLOTH: return float3(0.7f, 1.0f, 1.0f);
 		case SHADINGMODELID_EYE: return float3(0.3f, 1.0f, 1.0f);
+		case SHADINGMODELID_MYSHADINGMODEL: return float3(1.0f, 0.1f, 0.1f);
 		default: return float3(1.0f, 1.0f, 1.0f); // White
 	}
 #endif

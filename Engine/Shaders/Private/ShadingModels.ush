@@ -710,6 +710,39 @@ float3 SubsurfaceShadingPreintegratedSkin( FGBufferData GBuffer, float3 L, float
 	return PreintegratedBRDF * SubsurfaceColor;
 }
 
+float3 MyShading(FGBufferData GBuffer, float3 Roughness, float3 L, float3 V, half3 N)
+{
+	float Range = GBuffer.CustomData.x * 0.5f;
+	float3 H = normalize(V + L);
+	float NoH = saturate(dot(N, H));
+	//return GBuffer.DiffuseColor + saturate(smoothstep(0.5f - Range, 0.5f + Range, NoH) * GBuffer.SpecularColor);
+	float3 Diffuse = Diffuse_Lambert(GBuffer.DiffuseColor);
+	return Diffuse;
+
+}
+float3 MyShading2(float3 DiffuseColor, float3 SpecularColor, float3 LobeRoughness, float3 LobeEnergy, float3 L, float3 V, half3 N)
+{
+	float NoL = dot(N, L);
+	float NoV = dot(N, V);
+	float LoV = dot(L, V);
+	float InvLenH = rsqrt(2 + 2 * LoV);
+	float NoH = saturate((NoL + NoV) * InvLenH);
+	float VoH = saturate(InvLenH + InvLenH * LoV);
+	NoL = saturate(NoL);
+	NoV = saturate(abs(NoV) + 1e-5);
+
+	// Generalized microfacet specular
+	float D = D_GGX(LobeRoughness[1], NoH) * LobeEnergy[1];
+	float Vis = Vis_SmithJointApprox(LobeRoughness[1], NoV, NoL);
+	float3 F = F_Schlick(SpecularColor, VoH);
+
+	float3 Diffuse = Diffuse_Lambert(DiffuseColor);
+	//float3 Diffuse = Diffuse_Burley( DiffuseColor, LobeRoughness[1], NoV, NoL, VoH );
+	//float3 Diffuse = Diffuse_OrenNayar( DiffuseColor, LobeRoughness[1], NoV, NoL, VoH );
+
+	//return Diffuse * LobeEnergy[2] + (D * Vis) * F;
+	return float3(1.0f, 0.0f, 0.0f);
+}
 // @param DiffSpecMask .r: diffuse, .g:specular e.g. float2(1,1) for both, float2(1,0) for diffuse only
 float3 SurfaceShading( FGBufferData GBuffer, float3 LobeRoughness, float3 LobeEnergy, float3 L, float3 V, half3 N, uint2 Random )
 {
@@ -728,10 +761,14 @@ float3 SurfaceShading( FGBufferData GBuffer, float3 LobeRoughness, float3 LobeEn
 			return ClothShading( GBuffer, LobeRoughness, LobeEnergy, L, V, N );
 		case SHADINGMODELID_EYE:
 			return EyeShading( GBuffer, LobeRoughness, LobeEnergy, L, V, N );
+		//case SHADINGMODELID_MYSHADINGMODEL:
+			//return MyShading2(GBuffer.DiffuseColor, GBuffer.SpecularColor, LobeRoughness, LobeEnergy, L, V, N);
 		default:
 			return 0;
 	}
 }
+
+
 
 float3 SubsurfaceShading( FGBufferData GBuffer, float3 L, float3 V, half3 N, float Shadow, uint2 Random )
 {

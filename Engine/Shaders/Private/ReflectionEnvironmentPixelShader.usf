@@ -70,7 +70,8 @@ void ReflectionEnvironmentTiledDeferredMain(
 #endif
 
 	BRANCH
-	if( GBuffer.ShadingModelID != SHADINGMODELID_UNLIT && GBuffer.ShadingModelID != SHADINGMODELID_HAIR )
+
+	if (GBuffer.ShadingModelID != SHADINGMODELID_UNLIT && GBuffer.ShadingModelID != SHADINGMODELID_HAIR && GBuffer.ShadingModelID != SHADINGMODELID_MYSHADINGMODEL)
 	{		
 		float3 N = GBuffer.WorldNormal;
 		float3 V = -CameraToPixel;

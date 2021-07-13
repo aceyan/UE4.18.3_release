@@ -901,7 +901,11 @@ void FPixelShaderInOut_MainPS(
 
 	// So that the following code can still use DiffuseColor and SpecularColor.
 	GBuffer.SpecularColor = lerp(0.08 * Specular.xxx, BaseColor, Metallic.xxx);
+	if (GBuffer.ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
+	{
+		GBuffer.SpecularColor = float3(0.0f, 0.0f, 0.0f);
 
+	}
 #if MATERIAL_NORMAL_CURVATURE_TO_ROUGHNESS
     float GeometricAARoughness = NormalCurvatureToRoughness(MaterialParameters.WorldNormal);
     GBuffer.Roughness = max(GBuffer.Roughness, GeometricAARoughness);
@@ -922,6 +926,10 @@ void FPixelShaderInOut_MainPS(
 #endif
 	GBuffer.DiffuseColor = BaseColor - BaseColor * Metallic;
 
+	if (GBuffer.ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
+	{
+		GBuffer.DiffuseColor = float3(0.0f, 0.0f, 0.0f);
+	}
 #if USE_DEVELOPMENT_SHADERS
 	{
 		// this feature is only needed for development/editor - we can compile it out for a shipping build (see r.CompileShadersForDevelopment cvar help)
@@ -930,14 +938,14 @@ void FPixelShaderInOut_MainPS(
 	}
 #endif
 
-    #if FORCE_FULLY_ROUGH
+#if FORCE_FULLY_ROUGH
 		// Factors derived from EnvBRDFApprox( SpecularColor, 1, 1 ) == SpecularColor * 0.4524 - 0.0024
 		GBuffer.DiffuseColor += GBuffer.SpecularColor * 0.45;
 		GBuffer.SpecularColor = 0;
 		GBuffer.Roughness = 1;
-	#endif
+#endif
 
-	float3 BentNormal = MaterialParameters.WorldNormal;
+		float3 BentNormal = MaterialParameters.WorldNormal;
 	float DiffOcclusion = MaterialAO;
 	float SpecOcclusion = MaterialAO;
 	ApplyBentNormal( MaterialParameters, GBuffer.Roughness, BentNormal, DiffOcclusion, SpecOcclusion );
@@ -1051,7 +1059,7 @@ void FPixelShaderInOut_MainPS(
 	#endif
 		
 	// Volume lighting for lit translucency
-	#if (MATERIAL_SHADINGMODEL_DEFAULT_LIT || MATERIAL_SHADINGMODEL_SUBSURFACE) && (MATERIALBLENDING_TRANSLUCENT || MATERIALBLENDING_ADDITIVE) && !SIMPLE_FORWARD_SHADING && !FORWARD_SHADING
+	#if (MATERIAL_SHADINGMODEL_DEFAULT_LIT || MATERIAL_SHADINGMODEL_SUBSURFACE || MATERIAL_SHADINGMODEL_MYSHADINGMODEL) && (MATERIALBLENDING_TRANSLUCENT || MATERIALBLENDING_ADDITIVE) && !SIMPLE_FORWARD_SHADING && !FORWARD_SHADING
 		Color += GetTranslucencyVolumeLighting(MaterialParameters, PixelMaterialInputs, BasePassInterpolants, GBuffer, IndirectIrradiance);
 	#endif
 

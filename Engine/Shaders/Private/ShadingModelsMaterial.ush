@@ -121,6 +121,10 @@ void SetGBufferForShadingModel(
 	#endif
 	GBuffer.CustomData.z = saturate( GetMaterialCustomData0(MaterialParameters) );	// Iris Mask
 	GBuffer.CustomData.w = saturate( GetMaterialCustomData1(MaterialParameters) );	// Iris Distance
+
+#elif MATERIAL_SHADINGMODEL_MYSHADINGMODEL
+	GBuffer.ShadingModelID = SHADINGMODELID_MYSHADINGMODEL;
+	GBuffer.CustomData.x =  GetMaterialCustomData0(MaterialParameters) ;
 #else
 	// missing shading model, compiler should report ShadingModelID is not set
 #endif
