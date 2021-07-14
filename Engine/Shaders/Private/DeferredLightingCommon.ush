@@ -542,7 +542,10 @@ float4 GetDynamicLighting(float3 WorldPosition, float3 CameraVector, FGBufferDat
 			if (ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
 			{
 				//float3 LightColor = LightData.LightColorAndFalloffExponent.rgb;
-				LightAccumulator.TotalLight = float3(1.0f, 1.0f, 1.0f) * LightColor;
+				//LightAccumulator.TotalLight = float3(1.0f, 1.0f, 1.0f) * LightColor;
+
+				//LightAccumulator.TotalLight = GBuffer.CustomData.rgb;
+				LightAccumulator.TotalLight = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
 			}
 				// accumulate surface
 				{

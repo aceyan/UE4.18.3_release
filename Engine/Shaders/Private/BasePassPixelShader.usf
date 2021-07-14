@@ -811,19 +811,22 @@ void FPixelShaderInOut_MainPS(
 
 	// If we don't use this shading model the color should be black (don't generate shader code for unused data, don't do indirectlighting cache lighting with this color).
 	float3 SubsurfaceColor = 0;
-#if MATERIAL_SHADINGMODEL_SUBSURFACE || MATERIAL_SHADINGMODEL_PREINTEGRATED_SKIN || MATERIAL_SHADINGMODEL_SUBSURFACE_PROFILE || MATERIAL_SHADINGMODEL_TWOSIDED_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTH
+#if MATERIAL_SHADINGMODEL_SUBSURFACE || MATERIAL_SHADINGMODEL_PREINTEGRATED_SKIN || MATERIAL_SHADINGMODEL_SUBSURFACE_PROFILE || MATERIAL_SHADINGMODEL_TWOSIDED_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTH || MATERIAL_SHADINGMODEL_MYSHADINGMODEL
 	{
 		float4 SubsurfaceData = GetMaterialSubsurfaceData(PixelMaterialInputs);
 
 #if MATERIAL_SHADINGMODEL_SUBSURFACE || MATERIAL_SHADINGMODEL_PREINTEGRATED_SKIN || MATERIAL_SHADINGMODEL_TWOSIDED_FOLIAGE
 		SubsurfaceColor = SubsurfaceData.rgb * View.DiffuseOverrideParameter.w + View.DiffuseOverrideParameter.xyz;
-#elif MATERIAL_SHADINGMODEL_CLOTH
+#elif MATERIAL_SHADINGMODEL_CLOTH ||  MATERIAL_SHADINGMODEL_MYSHADINGMODEL
 		SubsurfaceColor = SubsurfaceData.rgb;
 #endif
 		SubsurfaceProfile = SubsurfaceData.a;
 	}
 #endif
+	//SubsurfaceColor = GetMaterialSubsurfaceData(PixelMaterialInputs).rgb;
+	//SubsurfaceProfile = GetMaterialSubsurfaceData(PixelMaterialInputs).a;
 
+	
 #if USE_DBUFFER && MATERIALDECALRESPONSEMASK && !MATERIALBLENDING_ANY_TRANSLUCENT
 	// apply decals from the DBuffer
 #if SM5_PROFILE

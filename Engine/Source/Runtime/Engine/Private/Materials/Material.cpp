@@ -4714,10 +4714,10 @@ bool UMaterial::IsPropertyActive(EMaterialProperty InProperty) const
 		Active = (ShadingModel != MSM_Unlit && (!bIsTranslucentBlendMode || !bIsNonDirectionalTranslucencyLightingMode)) || Refraction.IsConnected();
 		break;
 	case MP_SubsurfaceColor:
-		Active = ShadingModel == MSM_Subsurface || ShadingModel == MSM_PreintegratedSkin || ShadingModel == MSM_TwoSidedFoliage || ShadingModel == MSM_Cloth;
+		Active = ShadingModel == MSM_Subsurface || ShadingModel == MSM_PreintegratedSkin || ShadingModel == MSM_TwoSidedFoliage || ShadingModel == MSM_Cloth || ShadingModel == MSM_MyShadingModel;
 		break;
 	case MP_CustomData0:
-		Active = ShadingModel == MSM_ClearCoat || ShadingModel == MSM_Hair || ShadingModel == MSM_Cloth || ShadingModel == MSM_Eye || ShadingModel == MSM_MyShadingModel;
+		Active = ShadingModel == MSM_ClearCoat || ShadingModel == MSM_Hair || ShadingModel == MSM_Cloth || ShadingModel == MSM_Eye || ShadingModel == MSM_MyShadingModel;;
 		break;
 	case MP_CustomData1:
 		Active = ShadingModel == MSM_ClearCoat || ShadingModel == MSM_Eye;

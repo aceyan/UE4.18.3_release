@@ -35,8 +35,8 @@ void UMaterialGraph::RebuildGraph()
 		// Initialize the material input list.
 		MaterialInputs.Add( FMaterialInputInfo( GetBaseColorPinName(), MP_BaseColor, LOCTEXT( "BaseColorToolTip", "Defines the overall color of the Material. Each channel is automatically clamped between 0 and 1" ) ) );
 		MaterialInputs.Add( FMaterialInputInfo( GetMetallicPinName(), MP_Metallic, LOCTEXT( "MetallicToolTip", "Controls how \"metal-like\" your surface looks like") ) );
-		MaterialInputs.Add( FMaterialInputInfo( LOCTEXT("Specular", "Specular"), MP_Specular, LOCTEXT("SpecularToolTip", "Used to scale the current amount of specularity on non-metallic surfaces and is a value between 0 and 1, default at 0.5") ) );
-		MaterialInputs.Add( FMaterialInputInfo( LOCTEXT( "Roughness", "Roughness" ), MP_Roughness, LOCTEXT( "RoughnessToolTip", "Controls how rough the Material is. Roughness of 0 (smooth) is a mirror reflection and 1 (rough) is completely matte or diffuse" ) ) );
+		MaterialInputs.Add( FMaterialInputInfo(GetSpecularPinName(), MP_Specular, LOCTEXT("SpecularToolTip", "Used to scale the current amount of specularity on non-metallic surfaces and is a value between 0 and 1, default at 0.5") ) );
+		MaterialInputs.Add( FMaterialInputInfo( GetRoughnessPinName(), MP_Roughness, LOCTEXT( "RoughnessToolTip", "Controls how rough the Material is. Roughness of 0 (smooth) is a mirror reflection and 1 (rough) is completely matte or diffuse" ) ) );
 		MaterialInputs.Add( FMaterialInputInfo( GetEmissivePinName(), MP_EmissiveColor, LOCTEXT( "EmissiveToolTip", "Controls which parts of your Material will appear to glow" ) ) );
 		MaterialInputs.Add( FMaterialInputInfo( GetOpacityPinName(), MP_Opacity, LOCTEXT( "OpacityToolTip", "Controls the transluecency of the Material" ) ) );
 		MaterialInputs.Add( FMaterialInputInfo( LOCTEXT("OpacityMask", "Opacity Mask"), MP_OpacityMask, LOCTEXT( "OpacityMaskToolTip", "When in Masked mode, a Material is either completely visible or completely invisible" ) ) );
@@ -493,7 +493,41 @@ FText UMaterialGraph::GetOpacityPinName() const
 
 FText UMaterialGraph::GetMetallicPinName() const
 {
-	return Material->GetShadingModel() == MSM_Hair ? LOCTEXT("Scatter", "Scatter") : LOCTEXT("Metallic", "Metallic");
+	//return Material->GetShadingModel() == MSM_Hair ? LOCTEXT("Scatter", "Scatter") : LOCTEXT("Metallic", "Metallic");
+
+	switch (Material->GetShadingModel())
+	{
+	case MSM_Hair:
+		return LOCTEXT("Scatter", "Scatter");
+	case MSM_MyShadingModel:
+		return LOCTEXT("SSS R", "SSS R");
+	default:
+		return LOCTEXT("Metallic", "Metallic");
+	}
+}
+
+
+FText UMaterialGraph::GetSpecularPinName() const
+{
+	
+	switch (Material->GetShadingModel())
+	{
+	case MSM_MyShadingModel:
+		return LOCTEXT("SSS G", "SSS G");
+	default:
+		return LOCTEXT("Specular", "Specular");
+	}
+}
+
+FText UMaterialGraph::GetRoughnessPinName() const
+{
+	switch (Material->GetShadingModel())
+	{
+	case MSM_MyShadingModel:
+		return LOCTEXT("SSS B", "SSS B");
+	default:
+		return LOCTEXT("Roughness", "Roughness");
+	}
 }
 
 FText UMaterialGraph::GetNormalPinName() const
@@ -512,6 +546,8 @@ FText UMaterialGraph::GetSubsurfacePinName() const
 	{
 	case MSM_Cloth:
 		return LOCTEXT("FuzzColor", "Fuzz Color");
+	case MSM_MyShadingModel:
+		return LOCTEXT("LightMap", "LightMap");
 	default:
 		return LOCTEXT("SubsurfaceColor", "Subsurface Color");
 	}

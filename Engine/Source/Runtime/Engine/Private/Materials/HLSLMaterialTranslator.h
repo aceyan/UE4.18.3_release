@@ -450,7 +450,7 @@ public:
 			const EMaterialDomain Domain = (const EMaterialDomain)Material->GetMaterialDomain();
 
 			if (Domain == MD_Surface
-				&& IsSubsurfaceShadingModel(MaterialShadingModel))
+				&& (IsSubsurfaceShadingModel(MaterialShadingModel) || MaterialShadingModel == MSM_MyShadingModel))
 			{
 				// Note we don't test for the blend mode as you can have a translucent material using the subsurface shading model
 
