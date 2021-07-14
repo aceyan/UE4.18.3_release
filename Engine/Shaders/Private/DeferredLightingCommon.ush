@@ -545,10 +545,35 @@ float4 GetDynamicLighting(float3 WorldPosition, float3 CameraVector, FGBufferDat
 				//LightAccumulator.TotalLight = float3(1.0f, 1.0f, 1.0f) * LightColor;
 
 				//LightAccumulator.TotalLight = float3(GBuffer.CustomData.a, GBuffer.CustomData.a, GBuffer.CustomData.a);
-				LightAccumulator.TotalLight = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
+				//LightAccumulator.TotalLight = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
 				//LightAccumulator.TotalLight = float3(GBuffer.CustomData.a, 0.0f, 0.0f);
 
+				 float3 SSSColor = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
+				float3 LightMapColor = GBuffer.CustomData.rgb;
+				float InnerLightMask = GBuffer.CustomData.a;
 
+				float SpecularIntensity = LightMapColor.r;
+				float SpecularMask = LightMapColor.b;
+				float AOThreshold = LightMapColor.g;
+
+				float3 BrightColor = GBuffer.BaseColor;
+				float3 ShadowColor = GBuffer.BaseColor * SSSColor;
+				
+				float ShadowFactor = step(0.1f, NoL);
+
+				//一级阴影
+				float3 ShadowColorLevel1 = lerp(ShadowColor, BrightColor, ShadowFactor);
+				//二级阴影
+				float3 ShadowColorLevel2 = ShadowColor;
+
+				float3 DiffuseColor = lerp(ShadowColorLevel2, ShadowColorLevel1, AOThreshold);
+
+
+				float3 HalfWayVector = normalize(L + normalize(V));
+				float3 SpecularColor = pow(max(dot(N, HalfWayVector), 0.0), 20) * SpecularIntensity * SpecularMask * BrightColor * 20;
+
+				LightAccumulator.TotalLight = (SpecularColor + DiffuseColor) * InnerLightMask * LightColor;
+				
 			}
 				// accumulate surface
 				{
