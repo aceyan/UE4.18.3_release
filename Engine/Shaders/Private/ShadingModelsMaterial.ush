@@ -125,7 +125,7 @@ void SetGBufferForShadingModel(
 #elif MATERIAL_SHADINGMODEL_MYSHADINGMODEL
 	GBuffer.ShadingModelID = SHADINGMODELID_MYSHADINGMODEL;
 	//GBuffer.CustomData =  float4(1.0f, 0.0f,1.0f,1.0f);
-	GBuffer.CustomData = float4(SubsurfaceColor,1.0f);
+	GBuffer.CustomData = float4(SubsurfaceData.rgb, GetMaterialCustomData0(MaterialParameters));
 #else
 	// missing shading model, compiler should report ShadingModelID is not set
 #endif

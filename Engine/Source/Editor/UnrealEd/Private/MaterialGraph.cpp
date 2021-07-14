@@ -567,6 +567,8 @@ FText UMaterialGraph::GetCustomDataPinName( uint32 Index ) const
 			return LOCTEXT("Cloth", "Cloth");
 		case MSM_Eye:
 			return LOCTEXT("IrisMask", "Iris Mask");
+		case MSM_MyShadingModel:
+			return LOCTEXT("InnerLine Mask", "InnerLine Mask");
 		default:
 			return LOCTEXT("CustomData0", "Custom Data 0");
 		}
