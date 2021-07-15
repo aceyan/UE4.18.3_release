@@ -70,9 +70,30 @@ void DirectionalPixelMain(
 
 		FDeferredLightData LightData = SetupLightDataForStandardDeferred();
 		
-		uint2 Random = Rand3DPCG16( uint3( SVPos.xy, View.Random ) ).xy;
-		float Dither = InterleavedGradientNoise( SVPos.xy, View.StateFrameIndexMod8 );
+		uint2 Random = Rand3DPCG16(uint3(SVPos.xy, View.Random)).xy;
+		float Dither = InterleavedGradientNoise(SVPos.xy, View.StateFrameIndexMod8);
 
+
+		BRANCH
+		if (ScreenSpaceData.GBuffer.ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
+		{
+		
+			const float2 UVOffset[4] = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+			float NeighborDepth = 0;
+			float OutlineThickness = 1.0f;
+			float Diff = 0;
+			float Threshold = 10;
+			
+				for (int i = 0; i < 4; i++)
+				{
+					NeighborDepth = CalcSceneDepth(InUV + OutlineThickness * UVOffset[i] * View.BufferSizeAndInvSize.zw);
+					Diff += abs(SceneDepth - NeighborDepth);
+				}
+		
+			if (Diff >= Threshold)
+				return;
+		}
+	
 		OutColor = GetDynamicLighting(WorldPosition, CameraVector, ScreenSpaceData.GBuffer, ScreenSpaceData.AmbientOcclusion, ScreenSpaceData.GBuffer.ShadingModelID, LightData, GetPerPixelLightAttenuation(InUV), Dither, Random);
 	}
 }
