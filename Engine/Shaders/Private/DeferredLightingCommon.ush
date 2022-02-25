@@ -541,14 +541,8 @@ float4 GetDynamicLighting(float3 WorldPosition, float3 CameraVector, FGBufferDat
 			BRANCH
 			if (ShadingModelID == SHADINGMODELID_MYSHADINGMODEL)
 			{
-				//float3 LightColor = LightData.LightColorAndFalloffExponent.rgb;
-				//LightAccumulator.TotalLight = float3(1.0f, 1.0f, 1.0f) * LightColor;
-
-				//LightAccumulator.TotalLight = float3(GBuffer.CustomData.a, GBuffer.CustomData.a, GBuffer.CustomData.a);
-				//LightAccumulator.TotalLight = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
-				//LightAccumulator.TotalLight = float3(GBuffer.CustomData.a, 0.0f, 0.0f);
-
-				 float3 SSSColor = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
+		
+				float3 SSSColor = float3(GBuffer.Metallic, GBuffer.Specular, GBuffer.Roughness);
 				float3 LightMapColor = GBuffer.CustomData.rgb;
 				float InnerLightMask = GBuffer.CustomData.a;
 
